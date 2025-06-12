@@ -61,7 +61,6 @@ router.get('/search', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    console.log('Search query:', req.params.id);
     const product = products.find(p => p.id === +req.params.id);
 
     if (product) {

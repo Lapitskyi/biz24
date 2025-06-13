@@ -26,10 +26,9 @@ export const getSearchProducts= async (search) => {
         return null;
     }
 }
-///products/filter?category=electronics&price=100
+
 export const getProductsFilter=async (param) => {
     try {
-
         return await api.get(`/products/filter?${param}`);
     } catch (error) {
         console.error('API error:', error);

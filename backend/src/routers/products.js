@@ -10,30 +10,41 @@ router.get('/', (req, res) => {
 
 router.get('/filter', (req, res) => {
     let filteredProducts = products;
+    const { category, brand, price } = req.query;
 
-    Object.entries(req.query).forEach(([key, value]) => {
-        if (!value) return;
+    if (category) {
+        const categoryArray = Array.isArray(category) ? category : [category];
+        filteredProducts = filteredProducts.filter(product =>
+            categoryArray.includes(product.category)
+        );
+    }
+
+    if (brand) {
+        const brandArray = Array.isArray(brand) ? brand : [brand];
+        filteredProducts = filteredProducts.filter(product =>
+            brandArray.includes(product.brand)
+        );
+    }
+
+    if (price) {
+        const min = Number(price.min);
+        const max = Number(price.max);
 
         filteredProducts = filteredProducts.filter(product => {
-            const productValue = product[key];
-
-            if (productValue === undefined) {
-                return false;
-            }
-
-            if (!isNaN(productValue) && !isNaN(value)) {
-                return Number(productValue) === Number(value);
-            }
-
-            if (typeof productValue === 'string') {
-                return productValue.toLowerCase() === value.toLowerCase();
-            }
-
-            return productValue === value;
+            const productPrice = Number(product.price);
+            if (!isNaN(min) && productPrice < min) return false;
+            if (!isNaN(max) && productPrice > max) return false;
+            return true;
         });
-    });
+    }
 
-    res.json(filteredProducts);
+    res.json({
+        products: [...filteredProducts],
+        total: filteredProducts.length,
+        skip: 0,
+        limit: 10
+
+    });
 });
 
 router.get('/search', (req, res) => {

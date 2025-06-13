@@ -14,10 +14,7 @@
           </li>
         </ul>
       </div>
-
-
     </div>
-
   </header>
 </template>
 <script>
@@ -86,10 +83,6 @@ export default {
     align-items: center;
     padding: 5px;
     cursor: pointer;
-
-    &:hover {
-      background-color: grey;
-    }
 
     img {
       display: block;

@@ -1,39 +1,86 @@
-
-import {getProductId, getProducts, getSearchProducts} from "@/service/products";
+import {getProductId, getProducts, getProductsFilter, getSearchProducts} from "@/service/products";
+import {objectToQueryString} from "@/utils/helpers/objectToQueryString";
 
 export default {
     namespaced: true,
     state: {
-        categories:[],
+        loading: false,
+        error: '',
+        categories: [],
+        brand: [],
         products: [],
         productId: undefined,
-        total:0,
-        limit:30
+        total: 0,
+        limit: 30,
+        filterProduct: {
+            category: [],
+            brand: [],
+            price: {
+                min: 0,
+                max: 100,
+            },
+        },
     },
     mutations: {
         setProducts(state, products) {
             state.categories = [...new Set(products
                 .map(item => item.category))]
+            state.brand = [...new Set(products
+                .map(item => item.brand))]
             state.products = products;
         },
         setProductId(state, card) {
             state.productId = card;
-        }
+        },
+        setLoading(state, isLoading) {
+            state.loading = isLoading;
+        },
+        setFiltersProducts(state, filters) {
+            state.filterProduct = {...state.filterProduct, ...filters};
+        },
+        setSearchProduct(state, products) {
+            state.products = products;
+        },
     },
     actions: {
-        async fetchProducts({ commit }) {
-            const response = await getProducts()
-            commit('setProducts', response.products);
+        async fetchProducts({commit}) {
+            commit('setLoading', true);
+            try {
+                const response = await getProducts()
+                commit('setProducts', response.products);
+            } finally {
+                commit('setLoading', false);
+            }
         },
-        async fetchProductById({ commit }, id) {
-            const response = await getProductId(id)
-            commit('setProductId', response);
+        async fetchProductById({commit}, id) {
+            commit('setLoading', true);
+            try {
+                const response = await getProductId(id)
+                commit('setProductId', response);
+            } finally {
+                commit('setLoading', false);
+            }
         },
-        async fetchSearchProducts({commit}, search ) {
-            const response = await getSearchProducts(search)
-            commit('setProducts', response.products);
+        async fetchSearchProducts({commit}, search) {
+            commit('setLoading', true);
+            try {
+                const response = await getSearchProducts(search)
+                commit('setSearchProduct', response.products);
+            } finally {
+                commit('setLoading', false);
+            }
         },
-        async fetchFilterProducts({ commit }) {}
+        async fetchFilterProducts({commit}, val) {
+            commit("setFiltersProducts", val)
+            const params = objectToQueryString(val)
+            commit('setLoading', true);
+            try {
+                const response = await getProductsFilter(params)
+                commit('setSearchProduct', response.products);
+            } finally {
+                commit('setLoading', false);
+            }
+        }
     },
     getters: {
         allProducts(state) {
@@ -41,6 +88,9 @@ export default {
         },
         allCategory(state) {
             return state.categories;
+        },
+        allBrand(state) {
+            return state.brand;
         },
         getProductId(state) {
             return state.productId

@@ -11,10 +11,7 @@
         {{ product.rating }}
       </div>
       <p class="card__price" >&#x20AC {{ product.price }}</p>
-
     </div>
-
-
     <button
         class="card__btn"
     >Add Cart</button>

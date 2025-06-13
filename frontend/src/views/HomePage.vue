@@ -1,19 +1,13 @@
 <template>
   <div class="container">
-    <div v-if="!products.length">
+    <div class="load" v-if="loading">
       loading.....
     </div>
-    <div v-if="!products.length">
+    <div v-if="!loading && !products.length">
       Nothing found
     </div>
     <div v-else class="home">
       <div class="category">
-        <div
-            class="tabs"
-            v-for="item in categoriesProduct"
-            :key="item">
-          {{ item }}
-        </div>
         <div class="category__img" @click="isSidebarOpen = true">
           <img src="/images/svg/filter.svg" alt="img">
         </div>
@@ -36,38 +30,49 @@
 import ProductCard from "@/components/ProductCard.vue";
 import router from "@/router/router";
 import FilterSidebar from "@/components/FilterSidebar.vue";
+import {mapState} from 'vuex';
 
 export default {
   name: 'HomePage',
   components: {ProductCard, FilterSidebar},
   data() {
     return {
+      filterQuery: {},
+      selectedCategory: [],
       isSidebarOpen: false
     };
   },
   computed: {
+    ...mapState('products', ['loading', 'filterProduct']),
     products() {
       return this.$store.getters['products/allProducts'];
     },
-    categoriesProduct() {
-      return this.$store.getters['products/allCategory'];
-    }
   },
   methods: {
     selectProduct(card) {
       this.$store.commit('products/setProductId', card);
       router.push(`/product/${card.id}`);
-    }
+    },
   },
   created() {
     this.$store.dispatch('products/fetchProducts');
   },
 }
 </script>
-<style>
+<style scoped>
 
 .home {
   margin-top: 32px;
+  position: relative;
+}
+
+.load {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
 }
 
 .category {
@@ -95,16 +100,6 @@ export default {
     height: 100%;
     cursor: pointer;
   }
-}
-
-.tabs {
-  display: flex;
-  padding: 10px;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
 }
 
 .products {

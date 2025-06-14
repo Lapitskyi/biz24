@@ -3,16 +3,16 @@
     <div class="load" v-if="loading">
       loading.....
     </div>
-    <div v-if="!loading && !products.length">
-      Nothing found
-    </div>
     <div v-else class="home">
       <div class="category">
         <div class="category__img" @click="isSidebarOpen = true">
           <img src="/images/svg/filter.svg" alt="img">
         </div>
       </div>
-      <div class="products">
+      <div v-if="!loading && !products.length">
+        Nothing found
+      </div>
+      <div v-else class="products">
         <ProductCard
             v-for="card in products"
             :key="card.id"
@@ -20,9 +20,9 @@
             @selectedProduct="selectProduct"
         />
       </div>
-      <FilterSidebar :visible="isSidebarOpen" @close="isSidebarOpen = false"/>
 
     </div>
+    <FilterSidebar :visible="isSidebarOpen" @close="isSidebarOpen = false"/>
   </div>
 </template>
 

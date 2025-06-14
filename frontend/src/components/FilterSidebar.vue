@@ -142,7 +142,7 @@ export default {
   height: 100vh;
   background: #fff;
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
-  z-index: 1000;
+  z-index: 100;
 }
 
 .wrapper {

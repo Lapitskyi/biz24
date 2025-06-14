@@ -23,10 +23,6 @@ export default {
     },
     mutations: {
         setProducts(state, products) {
-            state.categories = [...new Set(products
-                .map(item => item.category))]
-            state.brand = [...new Set(products
-                .map(item => item.brand))]
             state.products = products;
         },
         setProductId(state, card) {
@@ -41,6 +37,12 @@ export default {
         setSearchProduct(state, products) {
             state.products = products;
         },
+        setParamsFilter(state, products) {
+            state.categories = [...new Set(products
+                .map(item => item.category))]
+            state.brand = [...new Set(products
+                .map(item => item.brand))]
+        }
     },
     actions: {
         async fetchProducts({commit}) {
@@ -48,6 +50,7 @@ export default {
             try {
                 const response = await getProducts()
                 commit('setProducts', response.products);
+                commit('setParamsFilter', response.products);
             } finally {
                 commit('setLoading', false);
             }

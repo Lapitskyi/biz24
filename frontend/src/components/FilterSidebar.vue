@@ -127,7 +127,6 @@ export default {
       this.$router.replace({query}).catch(err => {
         if (err.name !== 'NavigationDuplicated') throw err;
       });
-
     }
   }
 };

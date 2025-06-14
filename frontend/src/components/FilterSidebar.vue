@@ -1,7 +1,6 @@
 <template>
   <transition name="slide">
     <div v-if="visible" class="sidebar">
-
       <div class="wrapper">
         <h2>Filters</h2>
       </div>
@@ -10,7 +9,7 @@
       <div class="wrapper">
         <div
             class="tabs"
-            :class="{ active: filterProduct.category.includes(item) }"
+            :class="{ active: filterProduct.category.includes(item)}"
             v-for="item in categoriesProduct"
             :key="item"
             @click="toggleFilter('category', item)"
@@ -30,9 +29,8 @@
           {{ item }}
         </div>
       </div>
-
       <div class="wrapper">
-        <button @click="$emit('close')">Close</button>
+        <button @click="closeSidebar">Close</button>
       </div>
 
     </div>
@@ -67,16 +65,36 @@ export default {
   },
   mounted() {
     const parsed = parseFiltersFromQuery(this.$route.query);
+
+    if (parsed.category) {
+      this.filters.category = Array.isArray(parsed.category)
+          ? parsed.category
+          : [parsed.category];
+    }
+    if (parsed.brand) {
+      this.filters.brand = Array.isArray(parsed.brand)
+          ? parsed.brand
+          : [parsed.brand];
+    }
+    if (parsed.price) {
+      this.filters.price = {
+        min: parsed.price.min != null ? parsed.price.min : this.filters.price.min,
+        max: parsed.price.max != null ? parsed.price.max : this.filters.price.max
+      };
+    }
+
     const hasAnyFilter = Object.keys(parsed).some(key => {
       const val = parsed[key];
-      if (Array.isArray(val)) return val.length > 0;
-      if (val && typeof val === 'object') {
-        return Object.values(val).some(v => v !== null && v !== undefined);
+      if (Array.isArray(val)) {
+        return val.length > 0;
       }
-      return val !== null && val !== undefined && val !== '';
+      if (val && typeof val === 'object') {
+        return Object.values(val).some(v => v != null && v !== '');
+      }
+      return val != null && val !== '';
     });
     if (hasAnyFilter) {
-      this.$store.dispatch('products/fetchFilterProducts', parsed);
+      this.$store.dispatch('products/fetchFilterProducts', this.filters);
     }
   },
   computed: {
@@ -89,6 +107,9 @@ export default {
     },
   },
   methods: {
+    closeSidebar() {
+      this.$emit('close');
+    },
     toggleFilter(name, value) {
       if (name === 'category' || name === 'brand') {
         const current = this.filters[name];
@@ -99,7 +120,6 @@ export default {
 
       this.applyFilters();
       this.filtersProduct()
-
     },
     filtersProduct() {
       const {price, ...rest} = this.filters

@@ -1,6 +1,15 @@
 import {getProductId, getProducts, getProductsFilter, getSearchProducts} from "@/service/products";
 import {objectToQueryString} from "@/utils/helpers/objectToQueryString";
 
+const defaultFilters = {
+    category: [],
+    brand: [],
+    price: {
+        min: 0,
+        max: 10000,
+    },
+}
+
 export default {
     namespaced: true,
     state: {
@@ -17,7 +26,7 @@ export default {
             brand: [],
             price: {
                 min: 0,
-                max: 100,
+                max: 10000,
             },
         },
     },
@@ -33,6 +42,9 @@ export default {
         },
         setFiltersProducts(state, filters) {
             state.filterProduct = {...state.filterProduct, ...filters};
+        },
+        resetFiltersProducts(state) {
+            state.filterProduct = { ...defaultFilters };
         },
         setSearchProduct(state, products) {
             state.products = products;
@@ -94,6 +106,9 @@ export default {
         },
         allBrand(state) {
             return state.brand;
+        },
+        getFilterProduct(state) {
+          return state.filterProduct;
         },
         getProductId(state) {
             return state.productId
